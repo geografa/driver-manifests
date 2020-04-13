@@ -28,7 +28,6 @@
     <div id="drive"><img src="./opt_drive.JPG" alt="drive"></div>
     <div id="cycling"><img src="./opt_bike.JPG" alt="bike"></div>
     <div id="walking"><img src="./opt_walk.JPG" alt="walk"></div>
-    <div id="start"><img src="https://i.cloudup.com/LYJ78rgOtL-3000x3000.jpeg" alt="start"></div>
 </div>
 
 <!-- The Modal -->
@@ -49,39 +48,10 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzO
 const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd',
-    center: [-122.66652804587056,45.57120217419137],
-    zoom: 16
+    center: [-122.6709023392117,45.52627164109552],
+    zoom: 11,
+    hash: true
 });
-
-// Geolocator
-// Add geolocate control to the map.
-
-const userLocation = new mapboxgl.GeolocateControl({
-    positionOptions: {
-        enableHighAccuracy: true
-    },
-    trackUserLocation: false
-})
-
-map.addControl(userLocation);
-
-getLocation = () => {
-	navigator.geolocation.getCurrentPosition(function(position) {
-		var start = position.coords.longitude + ',' + position.coords.latitude;
-        features.push({
-            "type": "Feature",
-            "geometry": { 
-                "type": "Point", 
-                "coordinates": [start]
-            },     
-            "properties": {
-                "title": "start"
-            }
-        });
-        map.getSource('stops').setData(geojson);
-        console.log(start);
-    });
-};
 
 // Geocoder stuff
 const geocoder = new MapboxGeocoder({
@@ -136,12 +106,16 @@ map.on('load', function() {
       'type': 'symbol',
       'source': 'stops',
       'layout': {
-          'icon-image': 'pizza',
+          'icon-image': 'box',
           // get the title name from the source's "title" property
           'text-field': ['get', 'title'],
           'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-          'text-offset': [0, 0.6],
-          'text-anchor': 'top'
+          'text-offset': [0, 3],
+          'text-anchor': 'bottom'
+      },
+      'paint': {
+          'text-halo-color': '#fff',
+          'text-halo-width': 3
       }
   });
 });
@@ -238,15 +212,13 @@ zoomBounds = (coordinates) => {
 }
 
 // MODAL 
-
 // Get the modal
 let modal = document.getElementById("myModal");
 
 // Get the buttons
 let drive = document.getElementById("drive"),
     cycling = document.getElementById("cycling"),
-    walking = document.getElementById("walking"),
-    start = document.getElementById("start");
+    walking = document.getElementById("walking");
 
 let cancel = document.getElementById("cancel");
 
@@ -261,9 +233,6 @@ cycling.onclick = function() {
 }
 walking.onclick = function() {
     getCoords(drawRoute,'walking');
-}
-start.onclick = function() {
-    getLocation();
 }
 
 // dismiss the modal
