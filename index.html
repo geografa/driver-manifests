@@ -10,6 +10,41 @@
 <style>
 	body { margin: 0; padding: 0;}
     #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    .mapboxgl-popup {
+        max-width: 200px;
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        top: -20px;
+    }
+    .mapboxgl-popup-content {
+        border-radius: 10px; 
+        background: rgba(29,200,204,0.8);
+    }
+    .mapboxgl-popup-content a {
+        color: black;
+    }
+    .mapboxgl-popup-tip {
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        z-index: 1;
+    }
+    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+        border-top-color: rgba(29,200,204,0.8);
+        -webkit-align-self: center;
+        align-self: center;
+        border-bottom: none;
+    }
+    .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+        border-bottom-color: rgba(29,200,204,0.8);
+        -webkit-align-self: center;
+        align-self: center;
+        border-top: none;
+    }
+    .stopName {
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+    .popupImg {max-width: 20px; padding-top: 5px; padding-right: 5px}
 </style>
 </head>
 <body>
@@ -119,6 +154,37 @@ map.on('load', function() {
           'text-halo-width': 3
       }
   });
+});
+
+// Create a popup, but don't add it to the map yet.
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: true
+});
+
+map.on('click', 'stops', function(e) {
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = 'pointer';
+
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var description = '<a href="geo:' + e.features[0].geometry.coordinates[1] + ',' + e.features[0].geometry.coordinates[0] + '"><span class="stopName">Get directions to: ' + e.features[0].properties.title + '</span></a>';
+    // Ensure that if the map is zoomed out such that multiple
+    // copies of the feature are visible, the popup appears
+    // over the copy being pointed to.
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    popup.setLngLat(coordinates)
+        .setHTML(description)
+        .addTo(map);
+});
+
+map.on('mouseleave', 'stops', function() {
+    map.getCanvas().style.cursor = '';
+    // popup.remove();
 });
 
 // optimization stuff
