@@ -2,15 +2,9 @@
     position: absolute;
     z-index: 1;
     margin-top: 5em;
-    margin-left: 1em;
-    background-color: #a7a7a7;
-    padding: 1em;
-    border-radius: 7px;
-}
-#profileBtn img {
-    border-radius: 50%;
-    max-width: 60px;
-    box-shadow: -2px 3px 5px grey;
+    /* margin-left: 1em; */
+    /* background-color: #a7a7a7; */
+    padding: 0.75em;
 }
 
 /* The Modal (background) */

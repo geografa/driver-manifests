@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>red-circle-3</title>
+    <defs>
+        <radialGradient cx="66.7155582%" cy="32.7815046%" fx="66.7155582%" fy="32.7815046%" r="79.5881511%" gradientTransform="translate(0.667156,0.327815),rotate(124.986762),scale(1.000000,1.087937),translate(-0.667156,-0.327815)" id="radialGradient-1">
+            <stop stop-color="#FF0000" stop-opacity="0.890597684" offset="0%"></stop>
+            <stop stop-color="#000000" stop-opacity="0.810751748" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="red-circle-3" transform="translate(2.000000, 2.000000)" fill="url(#radialGradient-1)" stroke="#FFFFFF" stroke-width="3">
+            <circle id="Oval" cx="10.5" cy="10.5" r="10.5"></circle>
+        </g>
+    </g>
+</svg>
