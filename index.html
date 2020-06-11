@@ -167,7 +167,7 @@ map.on('click', 'stops', function(e) {
     map.getCanvas().style.cursor = 'pointer';
 
     var coordinates = e.features[0].geometry.coordinates.slice();
-    var description = '<a href="geo:' + e.features[0].geometry.coordinates[1] + ',' + e.features[0].geometry.coordinates[0] + '"><span class="stopName">Get directions to: ' + e.features[0].properties.title + '</span><br>' + e.features[0].geometry.coordinates[0]/1000 + ',' + e.features[0].geometry.coordinates[1]+'</a>';
+    var description = '<a href="geo:' + e.features[0].geometry.coordinates[1] + ',' + e.features[0].geometry.coordinates[0] + '"><span class="stopName">Get directions to: ' + e.features[0].properties.title + '</span><br>' + Math.round(1000*e.features[0].geometry.coordinates[0])/1000 + ',' + Math.round(1000*e.features[0].geometry.coordinates[1])/1000 +'</a>';
     // Ensure that if the map is zoomed out such that multiple
     // copies of the feature are visible, the popup appears
     // over the copy being pointed to.
