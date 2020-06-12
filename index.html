@@ -54,16 +54,12 @@ const map = new mapboxgl.Map({
 const geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     marker: {
-        color: 'orange'
+        color: 'blue'
     },
     mapboxgl: mapboxgl
 });
 
 map.addControl(geocoder, 'top-left');
-
-geocoder.on('result', function() {
-//   modal.style.display = "block";
-});
 
 // Store the stops
 let features = [];
@@ -273,7 +269,7 @@ manifest.onclick = function() {
         let coord = element.geometry.coordinates;
         arr.push(coord)
     });
-    console.log('http://localhost:3002/manifest.html?coordinates=' + arr.join(';'));
+    console.log('http://localhost:3002/manifest.html#coordinates=' + arr.join(';'));
     // getCoords(drawRoute,'driving');
 }
 

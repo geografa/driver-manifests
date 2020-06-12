@@ -7,99 +7,27 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@700&family=PT+Sans:wght@700&display=swap" rel="stylesheet">
-<style>
-	body { margin: 0; padding: 0;}
-    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-    .mapboxgl-popup {
-        max-width: 200px;
-        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-        top: -20px;
-    }
-    .mapboxgl-popup-content {
-        border-radius: 10px; 
-        background: rgba(225, 63, 27, 0.8);
-    }
-    .mapboxgl-popup-content a {
-        color: white;
-    }
-    .mapboxgl-popup-tip {
-        width: 0;
-        height: 0;
-        border: 10px solid transparent;
-        z-index: 1;
-    }
-    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-        border-top-color: rgba(225, 63, 27, 0.8);
-        -webkit-align-self: center;
-        align-self: center;
-        border-bottom: none;
-    }
-    .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
-        border-bottom-color: rgba(225, 63, 27, 0.8);
-        -webkit-align-self: center;
-        align-self: center;
-        border-top: none;
-    }
-    .stopName {
-        font-size: 1.5em;
-        font-weight: bold;
-    }
-    .popupImg {max-width: 20px; padding-top: 5px; padding-right: 5px}
-</style>
-</head>
-<body>
-<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js"></script>
-<link
-    rel="stylesheet"
-    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css"
-    type="text/css"
-/>
+
 <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 
-<link href="./modal.css" rel="stylesheet" />
-
-<div id="profileBtn">
-    <div id="drive"><button>Route</button></div>
-    <div id="manifest"><button>Create Manifest</button></div>
-</div>
-
-<!-- The Modal -->
-<div id="myModal" class="modal">
-
-  <!-- Modal content -->
-  <div class="modal-content">
-    <p>Stop name: <input name="stop" onfocus="this.value=''" placeholder="optional" id="stopName"></input><button onclick="setStops()">Submit</button></p>
-    <p>Not the stop? <button id="cancel">Clear</button></p>
-  </div>
-</div>
-
+<link href="./style.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="profileBtn">
+        <div id="drive"><button>Route</button></div>
+    </div>
 <div id="map"></div>
-
 <script>
 mapboxgl.routingAccessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
 const map = new mapboxgl.Map({
     container: 'map', // container id
-    style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //stylesheet location
-    center: [139.7354504564139,35.67850376959029], // starting position
+    // style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //JP stylesheet location
+    style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //JP stylesheet location
+    center: [-122.67773866653444,45.52245801087795], // starting position
     zoom: 12, // starting zoom
-});
-
-// Geocoder stuff
-const geocoder = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken,
-    marker: {
-        color: 'orange'
-    },
-    mapboxgl: mapboxgl
-});
-
-map.addControl(geocoder, 'top-left');
-
-geocoder.on('result', function() {
-  modal.style.display = "block";
 });
 
 // Store the stops
@@ -131,44 +59,38 @@ let geojson = {
 
 // Add stops to the map
 map.on('load', function() {
-    map.addSource('stops', {
-        'type': 'geojson',
-        'data': geojson
-    });
-    map.addLayer({
-        'id': 'stops',
-        'type': 'symbol',
-        'source': 'stops',
-        'layout': {
-            'icon-image': 'red-circle-3',
-            // get the title name from the source's "title" property
-            'text-field': ['get', 'title'],
-            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-            'text-offset': [0, 3],
-            'text-anchor': 'bottom'
-        },
-        'paint': {
-            'text-halo-color': '#fff',
-            'text-halo-width': 3
-        }
-    });
+    // map.addSource('stops', {
+    //     'type': 'geojson',
+    //     'data': geojson
+    // });
+    // map.addLayer({
+    //     'id': 'stops',
+    //     'type': 'symbol',
+    //     'source': 'stops',
+    //     'layout': {
+    //         'icon-image': 'red-circle-3',
+    //         // get the title name from the source's "title" property
+    //         'text-field': ['get', 'title'],
+    //         'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+    //         'text-offset': [0, 3],
+    //         'text-anchor': 'bottom'
+    //     },
+    //     'paint': {
+    //         'text-halo-color': '#fff',
+    //         'text-halo-width': 3
+    //     }
+    // });
     if (window.location.hash) {
         var hashCoords = decodeURIComponent(window.location.hash.split('#coordinates=')[1]);
         
         var result = hashCoords.split(';').map(e => 
-            e.split(',')
+            e
         );
-        
-        result.forEach(el => {
-            el.forEach(element => {
-                let newCoord = parseFloat(element)
-                features.push(newCoord)
-            });
+        result.forEach(element => {
+            features.push(element)           
         });
-        
-        console.log(features)
-
     }
+    console.log(features)
 });
 
 // Create a popup, but don't add it to the map yet.
@@ -293,13 +215,8 @@ zoomBounds = (coordinates) => {
     });
 }
 
-// MODAL 
-// Get the modal
-let modal = document.getElementById("myModal");
-
 // Get the buttons
 let drive = document.getElementById("drive");
-let manifest = document.getElementById("manifest");
 
 let cancel = document.getElementById("cancel");
 
@@ -310,22 +227,6 @@ drive.onclick = function() {
     getCoords(drawRoute,'driving');
 }
 
-// create manifest
-manifest.onclick = function() {
-    let arr = [];
-    features.forEach(element => {
-        let coord = element.geometry.coordinates;
-        arr.push(coord)
-    });
-    console.log('http://localhost:3002/manifest.html?coordinates=' + arr.join(';'));
-    // getCoords(drawRoute,'driving');
-}
-
-// dismiss the modal
-cancel.onclick = function() {
-    modal.style.display = "none";
-    clearGC();
-}
 </script>
 </body>
 </html>
