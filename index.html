@@ -7,47 +7,7 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@700&family=PT+Sans:wght@700&display=swap" rel="stylesheet">
-<style>
-	body { margin: 0; padding: 0;}
-    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-    .mapboxgl-popup {
-        max-width: 200px;
-        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-        top: -20px;
-    }
-    .mapboxgl-popup-content {
-        border-radius: 10px; 
-        background: rgba(225, 63, 27, 0.8);
-    }
-    .mapboxgl-popup-content a {
-        color: white;
-    }
-    .mapboxgl-popup-tip {
-        width: 0;
-        height: 0;
-        border: 10px solid transparent;
-        z-index: 1;
-    }
-    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-        border-top-color: rgba(225, 63, 27, 0.8);
-        -webkit-align-self: center;
-        align-self: center;
-        border-bottom: none;
-    }
-    .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
-        border-bottom-color: rgba(225, 63, 27, 0.8);
-        -webkit-align-self: center;
-        align-self: center;
-        border-top: none;
-    }
-    .stopName {
-        font-size: 1.5em;
-        font-weight: bold;
-    }
-    .popupImg {max-width: 20px; padding-top: 5px; padding-right: 5px}
-</style>
-</head>
-<body>
+
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js"></script>
 <link
     rel="stylesheet"
@@ -58,9 +18,12 @@
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 
-<link href="./modal.css" rel="stylesheet" />
-
+<link href="./style.css" rel="stylesheet" />
+</head>
+<body>
+<div id="crosshair"><img src="./crosshair.png" alt="crosshair"></div>
 <div id="profileBtn">
+    <div id="addStop"><button>Add Stop</button></div>
     <div id="drive"><button>Route</button></div>
     <div id="manifest"><button>Create Manifest</button></div>
 </div>
@@ -70,8 +33,7 @@
 
   <!-- Modal content -->
   <div class="modal-content">
-    <p>Stop name: <input name="stop" onfocus="this.value=''" placeholder="optional" id="stopName"></input><button onclick="setStops()">Submit</button></p>
-    <p>Not the stop? <button id="cancel">Clear</button></p>
+    <p>Stop name: <input name="stop" onfocus="this.value=''" placeholder="optional" id="stopName"></input><button onclick="setStops()">Submit</button>  <button id="cancel">Cancel</button></p>
   </div>
 </div>
 
@@ -82,8 +44,9 @@ mapboxgl.routingAccessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbT
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
 const map = new mapboxgl.Map({
     container: 'map', // container id
-    style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //stylesheet location
-    center: [139.7354504564139,35.67850376959029], // starting position
+    // style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //JP stylesheet location
+    style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //JP stylesheet location
+    center: [-122.67773866653444,45.52245801087795], // starting position
     zoom: 12, // starting zoom
 });
 
@@ -99,29 +62,31 @@ const geocoder = new MapboxGeocoder({
 map.addControl(geocoder, 'top-left');
 
 geocoder.on('result', function() {
-  modal.style.display = "block";
+//   modal.style.display = "block";
 });
 
 // Store the stops
 let features = [];
 
 setStops = () => {
-  let stopName = document.getElementById("stopName").value;
-  let coords = geocoder.mapMarker.getLngLat();
+    let stopName = document.getElementById("stopName").value;
+    //let coords = geocoder.mapMarker.getLngLat();
+    let coords = map.getCenter();
+    console.log(coords);
 
-  features.push({
-    "type": "Feature",
-    "geometry": { 
-        "type": "Point", 
-        "coordinates": [coords.lng,coords.lat]
-     },     
-     "properties": {
-      "title": stopName
-    }
-  });
-  modal.style.display = "none";
-  map.getSource('stops').setData(geojson)
-  clearGC();
+    features.push({
+        "type": "Feature",
+        "geometry": { 
+            "type": "Point", 
+            "coordinates": [coords.lng,coords.lat]
+            },     
+            "properties": {
+            "title": stopName
+        }
+    });
+    modal.style.display = "none";
+    map.getSource('stops').setData(geojson)
+    clearGC();
 };
 
 let geojson = {
@@ -140,7 +105,7 @@ map.on('load', function() {
       'type': 'symbol',
       'source': 'stops',
       'layout': {
-          'icon-image': 'red-circle-3',
+          'icon-image': 'box',
           'icon-allow-overlap':true,
           // get the title name from the source's "title" property
           'text-field': ['get', 'title'],
@@ -149,7 +114,7 @@ map.on('load', function() {
           'text-anchor': 'bottom'
       },
       'paint': {
-          'icon-opacity':0.7,
+          'icon-opacity':0.9,
           'text-halo-color': '#fff',
           'text-halo-width': 3
       }
@@ -189,7 +154,7 @@ map.on('mouseleave', 'stops', function() {
 
 // optimization stuff
 function drawRoute(optCoords,profile) {
-	let url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/'+ profile + '/' + optCoords + '?steps=true&geometries=geojson&access_token=' + mapboxgl.routingAccessToken;
+	let url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/'+ profile + '/' + optCoords + '?steps=true&geometries=geojson&roundtrip=false&source=first&destination=last&access_token=' + mapboxgl.routingAccessToken;
 	let req = new XMLHttpRequest();
 	req.responseType = 'json';
 	req.open('GET', url, true);
@@ -294,6 +259,11 @@ clearGC = () => {geocoder.clear();}
 // optimize!
 drive.onclick = function() {
     getCoords(drawRoute,'driving');
+}
+
+// add stop
+addStop.onclick = function() {
+    modal.style.display = "block";
 }
 
 // create manifest
