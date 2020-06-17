@@ -280,6 +280,7 @@ function copyFC(containerid) {
     window.getSelection().addRange(range);
     document.execCommand("copy");
     alert("Text has been copied, please send to Mapbox")
+    document.getElementById('fc').style.display = "none";
   }
 }
 
