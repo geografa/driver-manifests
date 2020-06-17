@@ -80,21 +80,26 @@ map.on('load', function() {
     //         'text-halo-width': 3
     //     }
     // });
+
     if (window.location.hash) {
-        var hashCoords = decodeURIComponent(window.location.hash.split('#coordinates=')[1]);
-        
-        var result = hashCoords.split(';').map(e => 
-            e
-        );
-        result.forEach(element => {
-            features.push(element)           
-        });
+        let hashCoords = decodeURIComponent(window.location.hash.split('#coordinates=')[1]);
+
+        let result = hashCoords.split(';');
+
+        // result.forEach(element => {
+        //     console.log(element.split(','));
+        //     features.push(element)
+        //     // var result = element.split(',').map(e => 
+        //     //     console.log(parseFloat(e))
+        //     // )
+        // });
+        // console.log(features);
+        console.log(result.map(i => parseFloat(i)));
     }
-    console.log(features)
 });
 
 // Create a popup, but don't add it to the map yet.
-var popup = new mapboxgl.Popup({
+let popup = new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: true
 });

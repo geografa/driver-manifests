@@ -46,18 +46,51 @@ body { margin: 0; padding: 0;}
 #profileBtn {
   position: absolute;
   z-index: 1;
-  margin-top: 5em;
+  /* margin-top: 5em; */
   /* margin-left: 1em; */
-  /* background-color: #a7a7a7; */
+  background: rgba(0, 0, 0, 0.5);
   padding: 0.75em;
 }
-button {
-  margin-bottom: 1em;
+button { width: 80px;}
 
-  background-color: #2f72ff;
+#addStop button {
+  margin-bottom: 1em;
+  background-color: rgb(15, 46, 103);
   color: white;
   padding: 5px;
   border-radius: 5px;
+}
+#drive button {
+    margin-bottom: 1em;
+    background-color: rgb(116, 176, 19);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#manifest button {
+    margin-bottom: 1em;
+    background-color: rgb(224, 107, 107);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+#info {
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    position: relative;
+    bottom: 40px;
+    left: 10px;
+    padding: 5px 10px;
+    margin: 0;
+    font-size: 11px;
+    line-height: 18px;
+    border-radius: 3px;
+    max-width: 250px;
+    overflow-wrap: break-word;
+    overflow-y: scroll;
+    max-height: 200px;
+    /* display: none; */
 }
 
 /* The Modal (background) */
