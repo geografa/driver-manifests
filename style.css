@@ -51,6 +51,13 @@ body { margin: 0; padding: 0;}
   background: rgba(0, 0, 0, 0.5);
   padding: 0.75em;
 }
+#profileBtn p {
+    font-family: 'Helvetica Neue', 'Arial Narrow', Arial, sans-serif; 
+    color: #fff
+}
+#profileBtn a {
+    color: rgb(232, 249, 47)
+}
 button { width: 80px;}
 
 #addStop button {
