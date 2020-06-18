@@ -16,7 +16,7 @@
 </head>
 <body>
     <div id="profileBtn">
-        <div id="drive"><button>Route 2020-06-17</button></div>
+        <div id="drive"><button>Display optimized route</button></div>
     </div>
 <div id="map"></div>
 <script>
@@ -24,10 +24,10 @@ mapboxgl.routingAccessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbT
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
 const map = new mapboxgl.Map({
     container: 'map', // container id
-    style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //US stylesheet location
-    center: [-122.67756700515872,45.51764696323937], // starting position
-    // style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //JP stylesheet location
-    // center: [139.741,35.672], // JP starting position
+    // style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //US stylesheet location
+    // center: [-122.67756700515872,45.51764696323937], // starting position
+    style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //JP stylesheet location
+    center: [139.741,35.672], // JP starting position
     zoom: 12, // starting zoom
 });
 
