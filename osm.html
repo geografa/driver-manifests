@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Driver Manifests</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@700&family=PT+Sans:wght@700&display=swap" rel="stylesheet">
+
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css"
+    type="text/css"
+/>
+<!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+<link href="./style.css" rel="stylesheet" />
+</head>
+<body>
+<div id="crosshair"><img src="./crosshair.png" alt="crosshair"></div>
+<div id="profileBtn" class="route">
+    <div id="addStop"><button>Add Stop</button></div>
+    <div id="drive"><button>Route</button></div>
+    <div id="manifest"><button>Create Manifest</button></div>
+
+    <div id="fc"></div>
+    <button onclick="copyFC('fc')">💾</button>
+    <div><p><a href="./drives/us-2020-06-18.html">2020-06-18</a></p></div>
+</div>
+
+<div id="map"></div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <p>Stop name: <input name="stop" onfocus="this.value=''" placeholder="optional" id="stopName"></input><button onclick="setStops()">Submit</button>  <button id="cancel">Cancel</button></p>
+  </div>
+</div>
+
+<script>
+mapboxgl.routingAccessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
+const map = new mapboxgl.Map({
+    container: 'map', // container id
+    // style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //JP stylesheet location
+    style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //US stylesheet location
+    center: [-122.33078664549947,47.58794076885363], // starting position
+    // style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //US stylesheet location
+    // center: [139.741,35.672], // starting position
+    zoom: 12, // starting zoom
+});
+
+// Store the stops
+let features = [];
+
+let fc = document.getElementById('fc');
+
+setStops = () => {
+    let stopName = document.getElementById("stopName").value;
+    let coords = map.getCenter();
+    features.push({
+        "type": "Feature",
+        "geometry": { 
+            "type": "Point", 
+            "coordinates": [coords.lng,coords.lat]
+            },     
+            "properties": {
+            "title": stopName
+        }
+    });
+    modal.style.display = "none";
+    map.getSource('stops').setData(geojson)
+};
+
+let geojson = {
+  'type': 'FeatureCollection',
+  features
+};
+
+// Add stops to the map
+map.on('load', function() {
+  map.addSource('stops', {
+      'type': 'geojson',
+      'data': geojson
+  });
+  map.addLayer({
+      'id': 'stops',
+      'type': 'symbol',
+      'source': 'stops',
+      'layout': {
+          'icon-image': 'red-circle-3',
+          'icon-allow-overlap':true,
+          // get the title name from the source's "title" property
+          'text-field': ['get', 'title'],
+          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-offset': [0, 3],
+          'text-anchor': 'bottom'
+      },
+      'paint': {
+          'icon-opacity':0.9,
+          'text-halo-color': '#fff',
+          'text-halo-width': 3
+      }
+  });
+});
+
+// Create a popup, but don't add it to the map yet.
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: true
+});
+
+map.on('click', 'stops', function(e) {
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = 'pointer';
+
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var description = '<a href="geo:' + e.features[0].geometry.coordinates[1] + ',' + e.features[0].geometry.coordinates[0] + '"><span class="stopName">Get directions to: ' + e.features[0].properties.title + '</span><br>' + Math.round(1000*e.features[0].geometry.coordinates[0])/1000 + ',' + Math.round(1000*e.features[0].geometry.coordinates[1])/1000 +'</a>';
+    // Ensure that if the map is zoomed out such that multiple
+    // copies of the feature are visible, the popup appears
+    // over the copy being pointed to.
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    popup.setLngLat(coordinates)
+        .setHTML(description)
+        .addTo(map);
+});
+
+map.on('mouseleave', 'stops', function() {
+    map.getCanvas().style.cursor = '';
+});
+
+// optimization stuff
+function drawRoute(optCoords,profile) {
+	let url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/'+ profile + '/' + optCoords + '?steps=true&geometries=geojson&roundtrip=true&access_token=' + mapboxgl.routingAccessToken;
+	let req = new XMLHttpRequest();
+	req.responseType = 'json';
+	req.open('GET', url, true);
+	req.onload  = function() {
+		let jsonResponse = req.response;
+        let routeCoords = jsonResponse.trips[0].geometry;
+        let zoomCoords = jsonResponse.trips[0].geometry.coordinates;
+        addRoute(routeCoords); // add the route to the map
+        zoomBounds(zoomCoords);
+	};
+	req.send();
+};
+
+getCoords = (cb,profile) => {
+    let stops = [];
+    for (let i = 0; i < features.length; i++) {
+        const element = features[i].geometry.coordinates;
+        stops.push(element);
+    };
+    let optCoords = stops.join(';');
+    cb(optCoords,profile);
+}
+
+// adds the route as a layer on the map
+addRoute = (coords) => {
+	// check if the route is already loaded
+	if (map.getSource('route')) {
+		map.getSource('route').setData(coords);
+	} else {
+		map.addSource('route', {
+			type: 'geojson',
+			data: {
+				"type": "Feature",
+				"properties": {},
+				"geometry": coords
+			}
+		});
+		map.addLayer({
+			id:'routeline-active',
+			type:'line',
+			source: 'route',
+			layout:{
+				'line-join': 'round',
+				'line-cap': 'round'
+			},
+			paint:{
+				'line-color': '#2f72ff',
+				'line-width': {
+					base:1,
+					stops:[[12, 8], [22, 12]]
+				},
+                'line-opacity': 0.8
+			}
+		}, 'waterway-label');
+		map.addLayer({
+			"id": "route",
+			"type": "symbol",
+			"source": "route",
+			"layout": {
+				"symbol-placement": "line",
+				"text-field": "▶",
+				"text-size": {
+					"base": 1,
+					"stops": [[12, 24], [22, 60]]
+				},
+				"symbol-spacing": {
+					"base": 1,
+					"stops": [[12, 30], [22, 160]]
+				},
+				"text-keep-upright": false
+			},
+			"paint": {
+				"text-color": "#2f72ff",
+				"text-halo-color": "hsl(55, 11%, 96%)",
+				"text-halo-width": 3
+			}
+		}, "waterway-label");
+	};
+};
+
+zoomBounds = (coordinates) => {
+    let bounds = coordinates.reduce(function(bounds, coord) {
+        return bounds.extend(coord);
+    }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+    map.fitBounds(bounds, {
+        padding: 20
+    });
+}
+
+// MODAL 
+// Get the modal
+let modal = document.getElementById("myModal");
+
+// Get the buttons
+let drive = document.getElementById("drive");
+let manifest = document.getElementById("manifest");
+
+let cancel = document.getElementById("cancel");
+
+// optimize!
+drive.onclick = function() {
+    getCoords(drawRoute,'driving');
+}
+
+// add stop
+addStop.onclick = function() {
+    modal.style.display = "block";
+}
+
+// create manifest
+manifest.onclick = function() {
+    let arr = [];
+    features.forEach(element => {
+        let coord = element.geometry.coordinates;
+        arr.push(coord)
+    });
+    let featureCollection = '{"type": "FeatureCollection","features": ' + JSON.stringify(features) + '}'
+
+    fc.innerHTML = featureCollection;
+    fc.style.display = "block";
+    console.log(features);
+}
+
+// dismiss the modal
+cancel.onclick = function() {
+    modal.style.display = "none";
+}
+
+function copyFC(containerid) {
+  if (document.selection) {
+    var range = document.body.createTextRange();
+    range.moveToElementText(document.getElementById(containerid));
+    range.select().createTextRange();
+    document.execCommand("copy");
+  } else if (window.getSelection) {
+    var range = document.createRange();
+    range.selectNode(document.getElementById(containerid));
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    alert("Text has been copied, please send to Mapbox")
+    document.getElementById('fc').style.display = "none";
+  }
+}
+
+</script>
+</body>
+</html>
