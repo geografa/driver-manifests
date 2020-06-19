@@ -17,6 +17,7 @@
 <body>
     <div id="profileBtn">
         <div id="drive"><button>Display optimized route</button></div>
+        <a href="../osm.html">Back to main list</a>
     </div>
 <div id="map"></div>
 <script>
@@ -46,6 +47,7 @@ map.on('load', function() {
         'source': 'stops',
         'layout': {
             'icon-image': 'red-circle-3',
+            'icon-allow-overlap': true,
             // get the title name from the source's "title" property
             'text-field': ['get', 'title'],
             'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
