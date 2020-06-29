@@ -95,7 +95,7 @@ map.on('mouseleave', 'stops', function() {
 
 // optimization stuff
 function drawRoute(optCoords,profile) {
-	let url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/'+ profile + '/' + optCoords + '?steps=true&geometries=geojson&access_token=' + mapboxgl.routingAccessToken;
+	let url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/'+ profile + '/' + optCoords + '?steps=true&geometries=geojson&overview=full&access_token=' + mapboxgl.routingAccessToken;
 	let req = new XMLHttpRequest();
 	req.responseType = 'json';
 	req.open('GET', url, true);
