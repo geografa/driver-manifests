@@ -52,7 +52,7 @@ const map = new mapboxgl.Map({
     // style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //US stylesheet location
     // center: [-122.67756700515872,45.51764696323937], // starting position
     style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //stylesheet location
-    center: [139.741,35.672], // starting position
+    center: [139.74,35.67], // starting position
     zoom: 12, // starting zoom
 });
 
@@ -66,10 +66,10 @@ setStops = () => {
     let coords = map.getCenter();
     features.push({
         "type": "Feature",
-        "geometry": { 
-            "type": "Point", 
+        "geometry": {
+            "type": "Point",
             "coordinates": [coords.lng,coords.lat]
-            },     
+            },
             "properties": {
             "title": stopName
         }
@@ -232,7 +232,7 @@ zoomBounds = (coordinates) => {
     });
 }
 
-// MODAL 
+// MODAL
 // Get the modal
 let modal = document.getElementById("myModal");
 
