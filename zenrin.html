@@ -36,6 +36,7 @@
     <div><p><a href="./drives/jp-2020-06-24-25.html">2020-06-24-25</a></p></div>
     <div><p><a href="./drives/jp-2020-06-26.html">2020-06-26</a></p></div>
     <div><p><a href="./drives/jp-2020-06-30.html">2020-06-30</a></p></div>
+    <div><p><a href="./drives/jp-2020-07-01.html">2020-07-01</a></p></div>
 </div>
 
 <div id="map"></div>
@@ -72,10 +73,10 @@ setStops = () => {
     let coords = map.getCenter();
     features.push({
         "type": "Feature",
-        "geometry": { 
-            "type": "Point", 
+        "geometry": {
+            "type": "Point",
             "coordinates": [coords.lng,coords.lat]
-            },     
+            },
             "properties": {
             "title": stopName
         }
@@ -238,7 +239,7 @@ zoomBounds = (coordinates) => {
     });
 }
 
-// MODAL 
+// MODAL
 // Get the modal
 let modal = document.getElementById("myModal");
 
