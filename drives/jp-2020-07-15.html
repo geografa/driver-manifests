@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Driver Manifests</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@700&family=PT+Sans:wght@700&display=swap" rel="stylesheet">
+
+<!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+<link href="../style.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="profileBtn">
+        <div id="drive"><button>Display optimized route</button></div>
+        <a href="../zenrin.html">Back to main list</a>
+    </div>
+<div id="map"></div>
+<script>
+mapboxgl.routingAccessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
+const map = new mapboxgl.Map({
+    container: 'map', // container id
+    // style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //US stylesheet location
+    // center: [-122.67756700515872,45.51764696323937], // starting position
+    style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //JP stylesheet location
+    center: [139.741,35.672], // JP starting position
+    zoom: 12, // starting zoom
+});
+
+let geojson = {"type": "FeatureCollection","features": [{"type":"Feature","geometry":{"type":"Point","coordinates":[139.55835213286366,35.672558222715395]},"properties":{"title":"7/15 1-1"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.55250627731368,35.671011736534766]},"properties":{"title":"7/15 1-2"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.55423133162253,35.668009496233964]},"properties":{"title":"7/15 1-3"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.5543519206293,35.67351937828593]},"properties":{"title":"7/15 1-4"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.55618473845288,35.66949026423093]},"properties":{"title":"7/15 1-5"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.8665227133198,35.75921820063657]},"properties":{"title":"7/15 2-1"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.87142146885697,35.75778986770612]},"properties":{"title":"7/15 2-2"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.87007529985442,35.75970085371827]},"properties":{"title":"7/15 2-3"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.86931910399983,35.75795970332874]},"properties":{"title":"7/15 2-4"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.87138505738722,35.75885588278001]},"properties":{"title":"7/15 2-5"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.8671888322864,35.71791543643181]},"properties":{"title":"7/15 3-1"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.86576554111798,35.721125963997665]},"properties":{"title":"7/15 3-2"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.85903698903712,35.724273519476654]},"properties":{"title":"7/15 3-3"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.86623439144444,35.72296743217389]},"properties":{"title":"7/15 3-4"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.8665233274795,35.722041617154375]},"properties":{"title":"7/15 3-5"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.8311893436628,35.66787007897749]},"properties":{"title":"7/15 4-1"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.77440532075912,35.61843226042018]},"properties":{"title":"7/15 4-2"}}]};
+
+
+// Add stops to the map
+map.on('load', function() {
+    map.addSource('stops', {
+        'type': 'geojson',
+        'data': geojson
+    });
+    map.addLayer({
+        'id': 'stops',
+        'type': 'symbol',
+        'source': 'stops',
+        'layout': {
+            'icon-image': 'red-circle-3',
+            'icon-allow-overlap': true,
+            // get the title name from the source's "title" property
+            'text-field': ['get', 'title'],
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-offset': [0, 3],
+            'text-anchor': 'bottom'
+        },
+        'paint': {
+            'text-halo-color': '#fff',
+            'text-halo-width': 3
+        }
+    });
+});
+
+// Create a popup, but don't add it to the map yet.
+let popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: true
+});
+
+map.on('click', 'stops', function(e) {
+    // Change the cursor style as a UI indicator.
+    let features = geojson.features;
+    map.getCanvas().style.cursor = 'pointer';
+
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var description = '<a href="geo:' + e.features[0].geometry.coordinates[1] + ',' + e.features[0].geometry.coordinates[0] + '"><span class="stopName">Get directions to: ' + e.features[0].properties.title + '</span><br>' + Math.round(1000*e.features[0].geometry.coordinates[0])/1000 + ',' + Math.round(1000*e.features[0].geometry.coordinates[1])/1000 +'</a>';
+    // Ensure that if the map is zoomed out such that multiple
+    // copies of the feature are visible, the popup appears
+    // over the copy being pointed to.
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    popup.setLngLat(coordinates)
+        .setHTML(description)
+        .addTo(map);
+});
+
+map.on('mouseleave', 'stops', function() {
+    map.getCanvas().style.cursor = '';
+    // popup.remove();
+});
+
+// optimization stuff
+function drawRoute(optCoords,profile) {
+	let url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/'+ profile + '/' + optCoords + '?steps=true&geometries=geojson&overview=full&access_token=' + mapboxgl.routingAccessToken;
+	let req = new XMLHttpRequest();
+	req.responseType = 'json';
+	req.open('GET', url, true);
+	req.onload  = function() {
+		let jsonResponse = req.response;
+        let routeCoords = jsonResponse.trips[0].geometry;
+        let zoomCoords = jsonResponse.trips[0].geometry.coordinates;
+        addRoute(routeCoords); // add the route to the map
+        zoomBounds(zoomCoords);
+	};
+	req.send();
+};
+
+getCoords = (cb,profile) => {
+    let stops = [];
+    for (let i = 0; i < geojson.features.length; i++) {
+        const element = geojson.features[i].geometry.coordinates;
+        stops.push(element);
+    };
+    let optCoords = stops.join(';');
+    cb(optCoords,profile);
+}
+
+// adds the route as a layer on the map
+addRoute = (coords) => {
+	// check if the route is already loaded
+	if (map.getSource('route')) {
+		map.getSource('route').setData(coords);
+	} else {
+		map.addSource('route', {
+			type: 'geojson',
+			data: {
+				"type": "Feature",
+				"properties": {},
+				"geometry": coords
+			}
+		});
+		map.addLayer({
+			id:'routeline-active',
+			type:'line',
+			source: 'route',
+			layout:{
+				'line-join': 'round',
+				'line-cap': 'round'
+			},
+			paint:{
+				'line-color': '#2f72ff',
+				'line-width': {
+					base:1,
+					stops:[[12, 8], [22, 12]]
+				},
+                'line-opacity': 0.8
+			}
+		}, 'waterway-label');
+		map.addLayer({
+			"id": "route",
+			"type": "symbol",
+			"source": "route",
+			"layout": {
+				"symbol-placement": "line",
+				"text-field": "▶",
+				"text-size": {
+					"base": 1,
+					"stops": [[12, 24], [22, 60]]
+				},
+				"symbol-spacing": {
+					"base": 1,
+					"stops": [[12, 30], [22, 160]]
+				},
+				"text-keep-upright": false
+			},
+			"paint": {
+				"text-color": "#2f72ff",
+				"text-halo-color": "hsl(55, 11%, 96%)",
+				"text-halo-width": 3
+			}
+		}, "waterway-label");
+	};
+};
+
+zoomBounds = (coordinates) => {
+    let bounds = coordinates.reduce(function(bounds, coord) {
+        return bounds.extend(coord);
+    }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+    map.fitBounds(bounds, {
+        padding: 20
+    });
+}
+
+// Get the buttons
+let drive = document.getElementById("drive");
+
+let cancel = document.getElementById("cancel");
+
+clearGC = () => {geocoder.clear();}
+
+// optimize!
+drive.onclick = function() {
+    getCoords(drawRoute,'driving');
+}
+
+</script>
+</body>
+</html>
