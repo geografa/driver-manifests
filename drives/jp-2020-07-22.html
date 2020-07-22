@@ -16,7 +16,8 @@
 </head>
 <body>
     <div id="profileBtn">
-        <div id="drive"><button>Route 2020-06-17</button></div>
+        <div id="drive"><button>Display optimized route</button></div>
+        <a href="../zenrin.html">Back to main list</a>
     </div>
 <div id="map"></div>
 <script>
@@ -24,14 +25,14 @@ mapboxgl.routingAccessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbT
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
 const map = new mapboxgl.Map({
     container: 'map', // container id
-    style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //US stylesheet location
-    center: [-122.67756700515872,45.51764696323937], // starting position
-    // style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //JP stylesheet location
-    // center: [139.741,35.672], // JP starting position
+    // style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', //US stylesheet location
+    // center: [-122.67756700515872,45.51764696323937], // starting position
+    style: 'mapbox://styles/grafa/ck5kbptdv0i921iobqba9gz05', //JP stylesheet location
+    center: [139.741,35.672], // JP starting position
     zoom: 12, // starting zoom
 });
 
-let geojson = {"type": "FeatureCollection","features": [{"type":"Feature","geometry":{"type":"Point","coordinates":[139.75607162114443,35.737025714775754]},"properties":{"title":"14-1 Start"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.7559140413548,35.740223397025346]},"properties":{"title":"14-2"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.75663711362233,35.739891971938164]},"properties":{"title":"14-3"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.75697617958303,35.73973211264642]},"properties":{"title":"14-4"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.75743655721874,35.739989694207935]},"properties":{"title":"14-5"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.7576964384591,35.739687781166495]},"properties":{"title":"14-6"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.7580713133965,35.73921455914743]},"properties":{"title":"14-7"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.7577982701522,35.73879728908611]},"properties":{"title":"14-8"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.7589754892674,35.73880273893869]},"properties":{"title":"14-9"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.75934105385613,35.738127512787315]},"properties":{"title":"14-10"}}]}
+let geojson = {"type": "FeatureCollection","features": [{"type":"Feature","geometry":{"type":"Point","coordinates":[139.61491406345453,35.69422718039279]},"properties":{"title":"7/22 1-1"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.61612822360667,35.708356202145325]},"properties":{"title":"7/22 1-2"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.6134732320628,35.70796821293638]},"properties":{"title":"7/22 1-3"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.61271290847765,35.73140145643846]},"properties":{"title":"7/22 2-1"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.6156564509222,35.73886201296931]},"properties":{"title":"7/22 2-2"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.62078208728076,35.731470459418475]},"properties":{"title":"7/22 2-3"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.61273173972768,35.71467288410325]},"properties":{"title":"7/22 2-4"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.67224861145905,35.764674658168545]},"properties":{"title":"7/22 3-1"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.65415275396322,35.78799538212286]},"properties":{"title":"7/22 3-2"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.65068698140578,35.76986019953351]},"properties":{"title":"7/22 3-3"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.6539254931705,35.76738937692896]},"properties":{"title":"7/22 3-4"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.67454273318947,35.7827910743502]},"properties":{"title":"7/22 3-5"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.66866957664183,35.78079247444735]},"properties":{"title":"7/22 3-6"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.6463551284378,35.779584217768246]},"properties":{"title":"7/22 3-7"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[139.62536932131252,35.779283073153906]},"properties":{"title":"7/22 3-8"}}]};
 
 
 // Add stops to the map
@@ -46,6 +47,7 @@ map.on('load', function() {
         'source': 'stops',
         'layout': {
             'icon-image': 'red-circle-3',
+            'icon-allow-overlap': true,
             // get the title name from the source's "title" property
             'text-field': ['get', 'title'],
             'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
@@ -93,7 +95,7 @@ map.on('mouseleave', 'stops', function() {
 
 // optimization stuff
 function drawRoute(optCoords,profile) {
-	let url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/'+ profile + '/' + optCoords + '?steps=true&geometries=geojson&access_token=' + mapboxgl.routingAccessToken;
+	let url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/'+ profile + '/' + optCoords + '?steps=true&geometries=geojson&overview=full&access_token=' + mapboxgl.routingAccessToken;
 	let req = new XMLHttpRequest();
 	req.responseType = 'json';
 	req.open('GET', url, true);
